@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="topnav">
+    {% if session.logged_in %}
+		<a href="/logout/">Logout</a>
+	{% else %}
+		<a href="/login/">Login</a>
+		<a href="/register/">Sign up</a>
+	{% endif %}
+</div>
+<hr>
+
+{% if session['logged_in'] %}
+    <h5>Welcome, {{session['username'] }}</h5>
+{% endif %}
+<div class="limiter">
+    <div class="container-login100">
+        <div class="wrap-login100">
+            <form class="login100-form validate-form" action="detect" method="POST">
+                <span class="login100-form-title p-b-43">
+                    URL of website: 
+                </span>
+                
+                <div class="wrap-input100 validate-input" data-validate="Url is required">
+                    <input class="input100" type="" name="url">
+                    <span class="focus-input100"></span>
+                    <span class="label-input100">Url</span>
+                </div>
+
+            
+                <div class="container-login100-form-btn">
+                    <button class="login100-form-btn">
+                        Submit
+                    </button>
+                </div>
+            </form>
+
+            <div class="login100-more" style="background-image: url('../static/images/bg-01.jpg');">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock body %}
