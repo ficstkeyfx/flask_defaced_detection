@@ -5,6 +5,7 @@ from forms import URL_FORM, LoginForm
 from detection.detect import Detection
 import os
 import shutil
+from detection.crawl import Crawl
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '!9m@S-dThyIlW[pHQbN^'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:admin@localhost/auth'
@@ -64,15 +65,20 @@ def register():
 def detect():
     form = URL_FORM(request.form)
     print(form.url.data)
-    file_path = form.url.data
-    file_name = os.path.basename(file_path)
-    destination_path = f"static/images/detected/{file_name}"
+    url = form.url.data
+
+    crawl = Crawl()
+    crawl.crawl_data(url)
+    file_name = crawl.filename
+    file_path = f"detection/images/{file_name}.png"
+    print(file_path)
+    destination_path = f"static/images/detected/{file_name}.png"
     shutil.copy(file_path, destination_path)
     detect_model = Detection() 
     if detect_model.detect(file_path) == 0:
-        return render_template("index.html", detect = 1, image_path = file_name, url=file_path)
+        return render_template("index.html", detect = 1, image_path = file_name, url=url)
     else :
-        return render_template("index.html", detect = 2, image_path = file_name, url=file_path)
+        return render_template("index.html", detect = 2, image_path = file_name, url=url)
     return render_template("index.html")
 @app.route('/logout/')
 def logout():
