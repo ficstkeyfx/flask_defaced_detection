@@ -1,0 +1,776 @@
+Bài Viết
+Hỏi Đáp
+Thảo Luận
+
+
+
+
+
+
+
+
+
+
+VI
+new
+Đăng nhập/Đăng ký
++92
+Mai Trung Đức @maitrungduc1410
+Theo dõi
+36.5K 2.0K 67
+Đã đăng vào thg 12 20, 2019 7:15 CH 19 phút đọc
+11.5K
+60
+13
+Dockerize ứng dụng Python, Flask
+ContentCreator
+Chào mừng các bạn đã quay trở lại với series học Docker và CICD của mình 👋👋
+Ở bài trước mình đã hướng dẫn các bạn cách dockerize một ứng dụng NodeJS, đồng thời cùng với đó là một số khái niệm và câu hỏi liên quan trong bài.
+Ở bài này chúng ta sẽ tiếp tục series bằng cách thực hành dockerize một ứng dụng Python Flask nhé.
+"DỪNG DỪNG DỪNG, NEXT, NEXT, chuyển bài ông ơiiiii... Tôi dev NodeJS PHP chứ có phải Python đâu mà care"
+Mục đích của series này là mình sẽ hướng dẫn các bạn học Docker, trong bài này mình nghĩ các bạn hoàn toàn có thể hiểu được dù bạn chưa bao giờ code Python. Do đó mình hi vọng rằng các bạn vẫn sẽ theo sát được series này, từng bài từng bài, vì trong mỗi bài sẽ có những vấn đề liên quan đến Docker mình muốn gửi tới các bạn.
+Bắt tay vào làm thôi nào
+Tiền Setup
+Nhớ check là các bạn đã cài Docker và Docker-compose rồi nhé. Nếu chưa thì nhớ check lại phần cuối bài trước của mình để biết cách cài đặt nhé.
+Setup
+Các bạn clone source code ở đây về nhé.
+Ở bài này ta sẽ chỉ quan tâm tới folder docker-python sau khi clone nhé . Ở đó mình có setup cho các bạn một ứng dụng Python dùng Flask framework nhé (bạn nào dev PHP có thể coi nó như Laravel của PHP vậy )
+Nếu các bạn có cài Python ở máy thì có thể chạy command sau để chạy project nhé:
+pip install -r requirements.txt
+python app.py
+Mở trình duyệt ở địa chỉ localhost:5000 và các bạn sẽ thấy dòng Hello World
+Còn nếu máy các bạn không có Python, thì vẫn tuyệt vời ô sờ kê nhé. Chỉ cần các bạn đã cài Docker và Docker compose, những thứ khác có hay không có, không quan trọng
+Build Docker Image
+Vẫn như ở bài trước, đầu tiên ta cần tạo file cấu hình Dockerfile và định nghĩa môi trường chúng ta mong muốn, sau đó ta sẽ build image và chạy nhé
+Cấu hình Dockerfile
+Ở thư mục docker-python các bạn tạo file tên là Dockerfile, bên trong có nội dung như sau:
+FROM python:3.6-alpine
+
+WORKDIR /app
+
+COPY . .
+
+RUN pip install -r requirements.txt
+
+CMD ["python", "app.py"]
+Giải thích:
+Dòng đầu tiên FROM: ta bắt đầu từ 1 Image có môi trường Alpint và đã cài sẵn Python phiên bản 3.6. Xem danh sách Image Python ở đâu, các bạn check ở link chính thức này nhé
+Lí do sao lại chọn Alpine mà không phải Ubuntu hay Debian, CentOS,.... Thì ở bài trước ở mục này mình đã phân tích rồi nhé. Đồng thời xuyên suốt series này mình sẽ luôn dùng môi trường hệ điều hành Alpine Linux nhé
+Tiếp theo trong file Dockerfile ta có WORKDIR: ý là ta sẽ chuyển đến đường dẫn là /app bên trong Image, nếu đường dẫn này không tồn tại thì sẽ tự động được tạo luôn nhé
+Tiếp theo ta COPY toàn bộ file từ folder ở môi trường gốc (bên ngoài - folder docker-python) và đưa vào trong đường dẫn /app bên trong Image
+Tiếp tới là ta cài đặt dependencies, cần cài những thứ gì thì ta đề cập sẵn ở file requirements.txt rồi (câu lệnh này các bạn có thể xem nó xêm xêm như npm install trong NodeJS nhé)
+Cuối cùng là ta dùng CMD để chỉ command mặc định khi một container được khởi tạo từ Image: ở đây ta sẽ khởi động file app.py
+Build Docker Image
+Sau khi cấu hình nhiễn nhặn ngon rồi, bước tiếp theo là ta build Image thôi. Các bạn chạy command sau để build Image nhé:
+docker build -t learning-docker/python:v1 .
+Ở bài trước mình đã giải thích cho các bạn command trên làm gì rồi, các bạn có thể xem lại nhé.
+Giải thích nhanh: command trên sẽ build 1 image tên là learning-docker/python với tag là v1, cả tên và tag ta đều có thể chọn tùy ý, nếu ta không để tag thì sẽ tự động được lấy là latest. Dấu "chấm" ở cuối ý bảo Docker là "tìm file Dockerfile ở thư mục hiện tại và build" nhé
+Sau khi quá trình build Image thành công, các bạn có thể kiểm tra bằng command:
+docker images
+Sẽ thấy hiển thị như sau nhé:
+Chạy Project
+Sau khi ta đã build thành công Image rồi thì bước tiếp theo là chạy project lên và xem thành quả thôi nhé .
+Vẫn ở folder docker-python, các bạn tạo file docker-compose.yml, với nội dung như sau:
+version: "3.7"
+
+services:
+  app:
+    image: learning-docker/python:v1
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+Ở bài trước phần chạy project mình đã giải thích cho các bạn những thứ bên trên. Nếu các bạn chưa đọc thì nên xem qua nhé .
+Giải thích nhanh:
+Ta định nghĩa 1 service tên là app, service này khi chạy sẽ tạo ra 1 container tương ứng, container được tạo từ image với tên chúng ta đã chọn.
+Ta map port từ cổng 5000 ở máy gốc (bên ngoài) vào cổng 5000 bên trong container, vì project của chúng ta được chạy ở cổng 5000 (mặc định của Flask)
+Nom chừng cách setup chả khác cho bài trước làm với NodeJS là mấy nhỉ .
+Để khởi động project các bạn chạy command sau:
+docker-compose up
+Sau đó các bạn sẽ thấy ở terminal hiển thị như sau
+Quá ổn, test thử thôi nào. Các bạn mở trình duyệt ở địa chỉ localhost:5000 nhé.
+Và BÙM
+Không có gì xảy ra
+Thử review lại code xem nhé:
+File app.py khá đơn giản, không có gì đáng gờm
+Đã có command chạy app ở file Dockerfile
+Port cũng đã map ở file docker-compose.yml
+Thế vấn đề là ở đâu nhỉ??
+Rõ ràng nếu mình chạy trực tiếp từ môi trường ngoài, máy gốc của mình (nếu ở máy gốc các bạn có cài Python), không dùng Docker nữa, thì mọi thứ vẫn oke mà nhỉ...
+Thử review lại docs của Flask ở đây, và ta đã tìm ra chân lý, chúng ta để ý mục Externally Visible Server. Mình sẽ dịch luôn cho các bạn:
+Nếu bạn chạy ứng dụng lên thì bạn sẽ để ý thấy rằng ứng dụng của bạn chỉ có thể truy cập được trong phạm vi máy của bạn (localhost), điều này được cài đặt mặc định
+Do đó khi chạy project của chúng ta trong container thì chỉ môi trường trong container mới truy cập được vào project, project của chúng ta coi môi trường đó mới là localhost, còn từ môi trường gốc (bên ngoài) truy vấn thì sẽ không được gọi là localhost nữa.
+Note: các bạn chú ý điều này vì sau này khi dockerize project Nuxt cũng sẽ bị tương tự
+Do đó để fix điều này ta làm như sau.
+Các bạn sửa lại file app.py một chút như sau nhé:
+from flask import Flask, render_template
+
+app = Flask(__name__)
+
+@app.route("/")
+def hello():
+    return render_template('index.html', title='Docker Python', name='James')
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0")
+Ở trên ta chỉ thêm vào duy nhất host=0.0.0.0 để nói với project chúng ta là "chấp nhận cho tất cả mọi IP truy cập"
+Ổn rồi đó chúng ta build lại image nhé:
+docker build -t learning-docker/python:v1 .
+Sau khi build xong thì ta cần khởi động lại project nhé, các bạn chạy command sau:
+docker-compose down
+docker-compose up
+Và cuối cùng là mở trình duyệt và test thôi nào:
+Tuyệt vời
+Biến môi trường (ENV)
+Bài trước và bài các bạn có thể thấy là project khi chạy đều được fix cứng 1 cổng (bài trước là 3000, bài này là 5000), thế nếu ta muốn container chạy ở một cổng khác thì ta lại phải sửa code hay sao??
+Lúc đó ta sẽ nghĩ tới biến môi trường (environment variable), trong quá trình dev và khi chạy thật tế sử dụng biến môi trường sẽ giúp ta rất nhiều trong việc giảm tối thiểu việc phải sửa code
+Biến môi trường ở Dockerfile
+Đầu tiên là ta sẽ thử dùng biến môi trường khai báo ở Dockerfile để thiết lập Port(cổng) cho project chạy trong container nhé (ý là container sẽ không chạy ở port 5000 nữa)
+Ở file app.py ta sửa lại như sau:
+from flask import Flask, render_template
+import os
+
+app = Flask(__name__)
+
+@app.route("/")
+def hello():
+    return render_template('index.html', title='Docker Python', name='James')
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=os.environ['PORT']) # Chạy project ở PORT nhận vào từ biến môi trường
+Sau đó ở file Dockerfile ta sửa lại như sau:
+FROM python:3.6-alpine
+
+WORKDIR /app
+
+# Tạo ra biến môi trường tên là PORT với giá trị 5555
+ENV PORT 5555
+
+COPY . .
+
+RUN pip install -r requirements.txt
+
+CMD ["python", "app.py"]
+Ở file docker-compose.yml ta sửa lại chút như sau nhé:
+version: "3.7"
+
+services:
+  app:
+    image: learning-docker/python:v1
+    ports:
+      - "5000:5555"
+    restart: unless-stopped
+Các bạn để ý ở trên khi ta map port ta chỉ chuyển mỗi vế bên phải, vế bên phải là port của project chạy ở trong container nhé, vế bên trái là port ở môi trường gốc (bên ngoài, ta có thể chọn tùy ý, và đây, port 5000 chính là port mà user sẽ dùng để truy cập ở trình duyệt)
+Tiếp theo ta tiến hành build lại image nhé:
+docker build -t learning-docker/python:v1 .
+Và khởi động lại project:
+docker-compose down
+docker-compose up
+Mở trình duyệt ở địa chỉ localhost:5000 (vẫn như cũ), các bạn sẽ thấy mọi thứ chạy bình thường, nhưng ngó qua Terminal thì sẽ thấy như sau:
+Ở hình trên ta thấy rằng ở bên trong container, project của chúng ta đã được chạy ở port 5555 rồi nhé
+Thế nếu bây giờ ta muốn đổi port của project trong container thành 6666 thì sao, ta lại phải build lại Image?
+Với những dạng biến môi trường mà dễ thay đổi thì ta có sự lựa chọn khác đơn giản hơn đó là khai báo ở file docker-compose.yml nhé
+Biến môi trường ở docker-compose
+Để không phải build lại image mỗi lần ta đổi port, ta sẽ khai báo biến môi trường ở docker-compose.yml nhé. Tại sao:
+Biến môi trường ở file Dockerfile sẽ được khai báo khi ta build image
+Biến môi trường ở file docker-compose.yml sẽ được khởi tạo khi container được khởi tạo, tức là khi ta chạy docker-compose up. Do đó để thay đổi biến môi trường ta chỉ cần down và up là xong
+Thử nghiệm thôi nào...
+Ở file Dockerfile ta xóa dòng ENV PORT 5555 đi nhé.
+Sau đó ở file docker-compose.yml ta sửa lại như sau:
+version: "3.7"
+
+services:
+  app:
+    image: learning-docker/python:v1
+    ports:
+      - "5000:6666"
+    restart: unless-stopped
+    environment:
+      PORT: 6666
+Bây giờ ta vẫn cần build lại image 1 lần để cập nhật mới được áp dụng:
+docker build -t learning-docker/python:v1 .
+Sau đó ta khởi động lại project nhé:
+docker-compose down
+docker-compose up
+Sau đó F5 lại trình duyệt để chắc chắn mọi thứ vẫn ổn, và xem ở terminal:
+Vậy là ta đã có thể dễ dàng thay đổi cổng của project trong container khi dùng biến môi trường rồi. Các bạn thử đổi lại thành 7777 thử xem (nhớ down và up docker-compose nhé )
+Cách tốt hơn để tạo biến môi trường
+Ở ví dụ trên nếu ta muốn đổi PORT thành 7777 chẳng hạn, ta phải sửa ở 2 nơi trong file docker-compose.yml, vậy nếu biến đó dùng ở 100 nơi trong file docker-compose.yml thì sao?
+docker-compose support ta một cách đơn giản hơn, tiện hơn để khởi tạo biến môi trường, đó là đặt ở file .env (giống y như Laravel , cũng đồng nghĩa với việc nếu ta dockerize project Laravel thì ta chỉ cần duy nhất 1 file chung là .env). Khi chạy project thì docker-compose sẽ tự tìm xem có file .env hay không và load các biến trong đó.
+Cùng thử nhé
+Ở folder docker-python ta tạo file .env với nôi dung như sau:
+PORT=8888
+PUBLIC_PORT=9999
+Giải thích:
+biến PORT: chỉ port của project chạy bên trong container
+biến PUBLIC_PORT: chỉ port mà "thế giới bên ngoài" dùng để truy cập vào project (ý là port ta gọi ở trình duyệt)
+Ta sửa lại file docker-compose.yml như sau:
+version: "3.4"
+
+services:
+  app:
+    image: learning-docker/python:v1
+    ports:
+      - "${PUBLIC_PORT}:${PORT}"
+    restart: unless-stopped
+    environment:
+      PORT: ${PORT}
+Sau đó ta khởi động lại project nhé:
+docker-compose down
+docker-compose up
+Check ở terminal ta sẽ thấy:
+Tuyệt vời, project đã chạy thành công ở cổng 8888 trong container. Giờ check trên trình duyệt thôi nào.
+Ta mở trình duyệt ở địa chỉ localhost:xxxx (các bạn tự điền xxxx xem là gì nhé )
+Push Image lên registry
+Ở bài trước dài quá mình chưa nói thêm vào các đưa image lên registry và làm người khác có thể chạy được project của bạn từ image như thế nào. Ở bài này thì ta có đất diễn rồi
+Docker build chạy ngon nghẻ ở máy của ta rồi thì thử đưa cho người khác xem họ chạy thế nào chứ nhỉ
+registry là nơi ta lưu Docker image (giống như github để lưu code, nhưng đây là lưu Docker image), có rất nhiều registry, có public có private.
+Ở trong series này ta sẽ dùng Gitlab để lưu code và cả lưu image trên registry của họ nhé. Gitlab cho ta unlimited image ở private registry cho từng repository (quá tuyệt vời mà còn free lại còn private)
+Tạo account và repository trên Gitlab
+Đầu tiên các bạn cần tạo 1 tài khoản trên Gitlab.com (nếu chưa có). Sau đó ta tạo một repository tên là learning-docker cho toàn bộ series này nhé
+Sau đó click chọn repository ta vừa tạo, để ý ở phần sidebar bên tay trái, hover chuột vào Packages, sau đó click chọn Container Registry, đây chính là nơi ta sẽ dùng để lưu trữ image nhé
+Các bạn sẽ thấy hiển thị như sau:
+Bắt đầu
+Giờ ta sẽ cùng thực hành đẩy image registry của gitlab nha
+Đầu tiên như ở hình trên, ta cần login vào registry của Gitlab trước (vì registry này là private mà ). Ta chạy command sau để login:
+docker login registry.gitlab.com
+Ta sẽ thấy ở terminal hỏi email và password tài khoản gitlab, các bạn nhập thông số của các bạn vào nhé.
+Sau đó bước tiếp theo như ở hình trên ta cần build image. Nhưng vì image ta đã có sẵn ở local rồi nên ta không cần thiết build lại nữa.
+"Ok vậy là tôi có thể đẩy luôn lên Gitlab rồi ấy gì?" - Chưa ăn ngay được đâu các bạn
+Khi đẩy image lên registry của gitlab ta cần phải đặt tên image theo chuẩn của họ, tag có thể đặt tùy ý nhưng tên phải đúng, theo format sau:
+registry.gitlab.com/<username>/<tên repo>
+Ở hình trên các bạn copy paste câu lệnh docker push để xem bạn cần phải đặt tên image thế nào nhé
+Sau khi biết cần đặt tên như nào rồi thì ta có 2 lựa chọn:
+Build lại image như command thử 2 ở trong hình trên để được image với tên theo format
+Đổi tên Image hiện tại đã có ở local
+Ở đây mình sẽ chọn cách số 2 là đổi tên để ta khỏi phải build lại image nhé
+Ta chạy command sau để liệt kê danh sách image:
+docker images
+ta sẽ thấy như sau:
+Tiếp theo ta sẽ tiến hành chạy command sau:
+docker tag learning-docker/python:v1 registry.gitlab.com/maitrungduc1410/learning-docker
+Note: phần tên image gitlab bên trên các bạn thay cho khớp với của bạn nhé, đồng thời nếu các bạn thử liệt kê danh sách image lại sẽ thấy ta có 1 image mới là bản sao của image cũ, image cũ vẫn còn đó, các bạn có thể xóa image cũ nếu cần nhé
+Cuối cùng là ta đẩy image lên registry thôi nào:
+docker push registry.gitlab.com/maitrungduc1410/learning-docker  ## thay tên image cho khớp với của các bạn nhé
+Sau khi upload thành công ta quay lại trang Container Registry trên gitlab và check:
+Các bạn có thể thấy là ta đã có 1 image trên registry với tag là latest (vì khi nãy lúc đổi tên và khi push ta không nói tag là gì nên docker mặc định tag là latest)
+Pull Image về và chạy thử
+Lại đến giờ phút của sự thật, không biết khi đem image qua máy khác chạy hoặc một nơi nào đó thì mọi thứ có còn ổn hay không??
+Bây giờ các bạn sẽ dùng một máy khác, hoặc nếu không có thì ta chuyển qua một folder nào đó để test, nếu dùng máy khác thì nhớ là máy đó phải cài Docker và Docker compose nhé.
+Ta tạo một folder test là test-docker ở bất kì đâu bạn muốn. Trong đó ta có các file như sau:
+.env để tạo biến môi trường
+docker-compose.yml để khởi chạy project
+File .env ta giữ nguyên nội dung, nhưng file docker-compose.yml ta sửa lại như sau:
+version: "3.4"
+
+services:
+  app:
+    # đổi tên image ở đây cho đúng với của bạn (không nói gì về tag thì mặc định là 'latest')
+    image: registry.gitlab.com/maitrungduc1410/learning-docker 
+    ports:
+      - "${PUBLIC_PORT}:${PORT}"
+    restart: unless-stopped
+    environment:
+      PORT: ${PORT}
+Sau đó ta lại chỉ cần chạy command sau để khởi động project:
+docker-compose up
+Vì image ta để là ở trên một private gitlab chỉ có ta mới được lấy image về, nên do đó nếu thấy báo lỗi xác thực thì các bạn chạy lại command sau để login nhé:
+docker login registry.gitlab.com
+# Chạy xong ta lại docker-compose up là được nhé
+Và mọi thứ sẽ chạy như bình thường , ta sẽ có kết quả hệt như ở máy gốc của chúng ta, dù ta đưa image đi chạy ở máy nào cũng vậy.
+Kết bài
+Mình biết là bài này lại làm cho các bạn đau mắt vì độ dài, vì có nhiều thứ mình muốn nói tới, nhưng dần dần những khái niệm mới sẽ hết và ta sẽ tập trung nhiều vào việc thực hành hơn nhé, sự đau mắt mình hi vọng vì thế cũng giảm đi
+Qua bài này các bạn đã thấy được cách để dockerize một ứng dụng Python như nào, khá giống bài trước cho NodeJS phải không . Ta vẫn không cần phải cài trực tiếp Python vào môi trường gốc (bên ngoài), vẫn chỉ có duy nhất docker và docker-compose
+Ở bài này có 2 nội dung quan trọng mình muốn nói tới:
+Cách dùng biến môi trường
+Cách đưa image lên registry để sau này ta có thể tải về và cách tải xuống image để chạy như thế nào
+Cám ơn các bạn đã theo dõi, nếu có gì thắc mắc các bạn cứ comment bên dưới cho mình được biết nhé .
+Source code bài này mình để ở đây (nhánh complete-tutorial nhé)
+Hẹn gặp lại các bạn ở các bài sau ^^
+Docker
+Python
+Flask
+
+All rights reserved
+MỤC LỤC
+Tiền Setup
+Setup
+Build Docker Image
+Cấu hình Dockerfile
+Build Docker Image
+Chạy Project
+Biến môi trường (ENV)
+Biến môi trường ở Dockerfile
+Biến môi trường ở docker-compose
+Cách tốt hơn để tạo biến môi trường
+Push Image lên registry
+Tạo account và repository trên Gitlab
+Bắt đầu
+Pull Image về và chạy thử
+Kết bài
+BÀI VIẾT THUỘC SERIES
+[Series] Học Docker, CICD từ cơ bản đến áp dụng vào thực tế
+1. Lí do tôi yêu Docker
+2. Dockerize ứng dụng NodeJS
+3. Dockerize ứng dụng Python, Flask
+4. Dockerize ứng dụng VueJS, ReactJS
+5. Dockerize ứng dụng Laravel
+6. Dockerize Project NodeJS, MongoDB, Redis, Passport
+7. Dockerize ứng dụng chat realtime với Laravel, Nginx, VueJS, Laravel Echo, Redis, SocketIO
+8. Giới thiệu Docker Network và HEALTHCHECK - 2 công cụ hữu ích từ Docker
+9. Bảo mật ứng dụng Docker NodeJS, Mongo, Redis
+10. Nhập môn CICD với Gitlab
+11. Automation Test với Docker và Gitlab CI
+
+
+
+
+
+
+
+
+
+
+
+Bài viết liên quan
+Cách dùng Docker để phát triển ứng dụng Wordpress
+Nguyễn Hữu Kim
+4 phút đọc
+2.5K
+14
+2
+26
+Tự xây dựng cho mình ứng dụng trên docker
+Dương Phạm
+7 phút đọc
+14.5K
+13
+2
+12
+Xây dựng API đơn giản với Flask, demo với Ngrok
+Nguyễn Nam Anh
+5 phút đọc
+1.7K
+6
+2
+3
+Xây dựng backend Flask, Nginx, Uwsgi trong docker như thế nào cho nhanh
+WheeBoo
+2 phút đọc
+2.4K
+5
+0
+5
+Bài viết khác từ Mai Trung Đức
+Tạo và sử dụng PersistentVolume và PersistentVolumeClaim trong Kubernetes
+Mai Trung Đức
+33 phút đọc
+484
+1
+9
+14
+Microfrontend, Module Federation - đưa microservices đến với frontend
+Mai Trung Đức
+27 phút đọc
+4.0K
+32
+25
+68
+Deploy Github Self Host Runner với Docker Compose dùng Replicated Mode
+Mai Trung Đức
+24 phút đọc
+1.9K
+6
+0
+23
+Làm việc với Configmap và Secret trên Kubernetes
+Mai Trung Đức
+24 phút đọc
+1.4K
+2
+6
+24
+Bình luận
+Đăng nhập để bình luận
+Thế Vinh @jinvauser
+thg 12 22, 2019 8:27 CH
+Rất chi tiết và dễ hiểu.. phải login vote cho bạn
++1
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 12 22, 2019 9:59 CH
+cám ơn bạn đã theo dõi nhé
+0
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 12 22, 2019 9:59 CH
+Bình luận này đã bị xóa
+Chu Hồ Tây @chuhotay1999
+thg 12 27, 2019 10:13 SA
+Bài viết cực kì dễ hiểu. Step by step rõ ràng. Bạn cố gắng ra thêm nhiều bài nữa nhé. Chúc bạn luôn thành công
++1
+|
+Trả lời
+Chia sẻ
+Huy Nguyễn @huy_nguyen
+thg 12 29, 2019 12:57 SA
+Dear Đức,
+Bạn giúp mình clear chỗ tạo file .env nhé. Mình tạo xong chạy trên public port = 9999 và private port = 8888. Nhưng khi up lên thì mình thấy vẫn chạy port 5000.
+Mình không thấy chỗ nào có cấu hình móc .env vào hết ( Dockerfile và docker-compose.yml)
+P/s Mình mò mẫm mới bước vào docker, mong bạn thông cảm nhé.
+Cảm ơn Đức.
+0
+|
+Trả lời
+Chia sẻ
+Xem thêm (4)
+Mai Trung Đức @maitrungduc1410
+thg 12 29, 2019 11:35 SA
+Cám ơn Huy đã chia sẻ nhé
+0
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 12 29, 2019 11:35 SA
+Bình luận này đã bị xóa
+Yen Devy @yendevy
+thg 1 16, 2020 11:14 SA
+https://prnt.sc/qocdc7 anh ơi update doc đi anh )
++1
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 1 16, 2020 1:41 CH
+cám ơn e nhé, a đã update lại đoạn đó nhé
+0
+|
+Trả lời
+Chia sẻ
+Tr Sơn @ssondaii
+thg 6 10, 2020 1:16 CH
+oẳng khi login vào gitlab sau khi chạy docker login registry.gitlab.com anh ạ, nó ko cho nhập password ?????
+0
+|
+Trả lời
+Chia sẻ
+Xem thêm (2)
+Mai Trung Đức @maitrungduc1410
+thg 6 10, 2020 11:19 CH
+Auth trên command line thì password nó ẩn đi k hiện trên màn hình thôi e, vẫn nhận đó. Cứ gõ vào nhé, rồi submit là đc
+0
+|
+Trả lời
+Chia sẻ
+Tr Sơn @ssondaii
+thg 6 11, 2020 10:52 SA
+0
+|
+Trả lời
+Chia sẻ
+Phong Đoàn @pdoan
+thg 8 22, 2020 10:43 SA
+Series quá hay, e phải login để vote cho a.
+A thông hộ e chỗ này với:
+E làm theo hướng dẫn của a, dockerize cho 1 project Python có sẵn, đến bước này:
+docker build -t learning-docker/python:v1 .
+Thì nó chạy đến bước Step 5/6 : RUN pip install -r requirements.txt
+Thì bị lỗi:
+ERROR: Could not find a version that satisfies the requirement tensorflow>=1.12.0 (from -r requirements.txt (line 2)) (from versions: none) ERROR: No matching distribution found for tensorflow>=1.12.0 (from -r requirements.txt (line 2)).
+Không tìm thấy version của tensorflow.
+Bình thường nếu chạy code python ko dùng docker thì e sẽ chạy pip install....
+Nhưng ở đây n chạy dc đến bước 5/6. Nên image n cứ bị restart lại liên tục, nên ko chạy dc docker-compose up để chạy pip install....
+A cho e hỏi làm cách nào đề fix dc lỗi này ạ.
+0
+|
+Trả lời
+Chia sẻ
+Xem thêm (4)
+Mai Trung Đức @maitrungduc1410
+thg 8 22, 2020 4:50 CH
+e docker-compose down sau đó build lại image rồi docker-compose up.
+hoặc chui trực tiếp vào container để cài, nhưng như thế không hay vì khi e down đi sẽ bị mất
+0
+|
+Trả lời
+Chia sẻ
+Phong Đoàn @pdoan
+thg 8 22, 2020 6:05 CH
+tks a ạ
++1
+|
+Trả lời
+Chia sẻ
+Đức Master @ducmaster
+thg 10 10, 2020 5:58 CH
+Dễ hiểu quá anh
++1
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 10 10, 2020 9:30 CH
+0
+|
+Trả lời
+Chia sẻ
+Nguyễn Thịnh @nbthinh
+thg 4 27, 2021 9:41 SA
+Mà bạn ơi, bạn có cái bài nào mà Dockerzie app nodejs gọi Python script được không bạn? Chứ ứng dụng nodejs gọi Python script mà có các thư viên sklearn, numpy không chạy được khi up lên heroku
+0
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 4 27, 2021 11:04 SA
+được bạn, thoải mái, mình đã từng làm như vậy, 1 trong những cách đó là bạn dùng child_process của nodejs và spawn cái python script của bạn
+0
+|
+Trả lời
+Chia sẻ
+Nguyễn Thịnh @nbthinh
+thg 4 27, 2021 11:24 SA
+bạn có bài hướng dẫn đó share link cho mình được ko? bài mình đang làm là dùng nodejs calo Python script nhưng chạy trên localhost thì được, nhưng đưa lên heroku thì ko chạy được.@maitrungduc1410
+0
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 4 27, 2021 12:41 CH
+@nbthinh mình ko có bài đó bạn, cái đó là code đi làm ngày trước. Bạn check ở đây: https://nodejs.org/api/child_process.html, cũng ko khó đâu
+0
+|
+Trả lời
+Chia sẻ
+Tuan @NguyenDucTuan92N1
+thg 5 9, 2021 4:38 CH
+Bài viết hay quá. cảm ơn anh nhiều. Em có chỗ không rõ mong được anh giải đáp. Mỗi khi em chỉnh sửa code thì lại cần phải build lại image để COPY code vào trong image. Rồi sau đó mới docker-compose down, docker-compose up, để chạy. Không biết là có cách nào chạy nhanh và hiệu quả không anh nhỉ.
+0
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 5 10, 2021 10:41 SA
+app Python ở trong bài là a đang chạy ở production mode nên mỗi lần e muốn thay đổi thì e phải build lại image, kể cả e có mount source code bên ngoài vào trong thì cũng ko đc vì nó ko reload mỗi khi e thay đổi. E update lại như sau là được nhé:
+version: "3.4"
+services:
+  app:
+    image: learning-docker/python:v1
+    ports:
+      - "${PUBLIC_PORT}:${PORT}"
+    restart: unless-stopped
+    volumes:
+      - ./:/app # ---> Mount source code từ ngoài vào trong để bên ngoài cập nhật thì code bên trong container cũng cập nhật theo
+    environment:
+      PORT: ${PORT}
+      FLASK_DEBUG: 1 # ---> chạy app ở Debug mode, mỗi khi code bên trong container thay đổi thì sẽ tự động reload cập nhật code mới
+Sau đó e docker-compose down rồi up lại là được
+0
+|
+Trả lời
+Chia sẻ
+Tuan @NguyenDucTuan92N1
+thg 5 10, 2021 6:51 CH
+@maitrungduc1410 cảm ơn a đã chia sẻ ạ. Chúc anh luôn thành công trong công việc.
++1
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 5 11, 2021 10:52 SA
+@NguyenDucTuan92N1 a cũng chúc e điều tương tự, và nhiều hơn thế
+0
+|
+Trả lời
+Chia sẻ
+Tuan @NguyenDucTuan92N1
+thg 5 9, 2021 4:40 CH
+Em có thắc mắc là mỗi khi em build lại Image thì lại có thêm 1 images mới, không biết cái <none> ấy là ảo hay nó sẽ tự xóa sau 1 thời gian ạ.
+0
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 5 10, 2021 9:04 SA
+sau khi e build image mới với cùng tag thì image cũ với chính tag đó sẽ trở thành <none, nó sẽ cứ ở đó nếu e ko xoá, e có thể xoá nó bằng cách:
+docker rmi <image ID>
+0
+|
+Trả lời
+Chia sẻ
+Nguyen Khac Thang @thangnk
+thg 8 4, 2021 9:21 CH
+A cho em hỏi với ạ Ví dụ em đang cần cài Keras, vậy thì em làm tn để biết môi trường python đang dùng của em có support Keras ạ
+Và còn nhiều module khác nữa ạ Hiện em đang dùng python:3.6-stretch mà vẫn ko cài được Keras ạ
+0
+|
+Trả lời
+Chia sẻ
+Xem thêm (5)
+Nguyen Khac Thang @thangnk
+thg 8 6, 2021 9:08 CH
+@maitrungduc1410 Em đang thử FROM continuumio/anaconda3 theo cấu trúc arm64
+Có lần được lần không, có vẻ chưa được ổn định a ạ
+Thanks a đã support e
+0
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 8 6, 2021 10:39 CH
+@thangnk okie e, chúc e may mắn
++1
+|
+Trả lời
+Chia sẻ
+Sang Nguyễn thế @sangmeo
+thg 8 12, 2021 5:47 CH
+người ơi accept em trên facebook được không idol muốn được bay sang sing như anh :v
+0
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 8 12, 2021 5:49 CH
+FB của e là j đó
+0
+|
+Trả lời
+Chia sẻ
+Sang Nguyễn thế @sangmeo
+thg 8 12, 2021 5:54 CH
+@maitrungduc1410 https://www.facebook.com/ITtodaynow idol ơi accept em với
+0
+|
+Trả lời
+Chia sẻ
+Sang Nguyễn thế @sangmeo
+thg 8 12, 2021 6:04 CH
+@maitrungduc1410 nếu anh thích thì anh có thể làm 1 series về NestJS anh ạ. KKK em cũng đang làm về cái này và nó cũng là 1 framework rất tiềm năng trong những năm sắp tới
+0
+|
+Trả lời
+Chia sẻ
+Remix music HOT @binhloc25012015
+thg 1 14, 2022 1:58 CH
+Hi bạn tut rất hay và dễ hiểu. Bạn cho mình hỏi tí hiện mình log in vào gitlab không được ạ. docker login registry.gitlab.com Error: Error response from daemon: Get https://registry.gitlab.com/v2/: unauthorized: HTTP Basic: Access denied
+search google thấy phải bật mode Container Registry trong repo gitlab nhưng repo mình không có tab đó. Cảm ơn bạn
++1
+|
+Trả lời
+Chia sẻ
+Remix music HOT @binhloc25012015
+thg 1 14, 2022 2:40 CH
+mình tìm ra lí do có lẻ do dùng account cty nên bị block chổ đó thank bạn
++1
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 1 14, 2022 10:04 CH
+@binhloc25012015 okie bạn ơi
+0
+|
+Trả lời
+Chia sẻ
+Ngo Thanh Dong @DongNT
+thg 4 28, 2022 10:13 SA
+Nếu bạn nào chạy lệnh docker login registry.gitlab.com bị lỗi như sau:
+Error response from daemon: Get "https://registry.gitlab.com/v2/": unauthorized: HTTP Basic: Access denied
+Thì fix như sau nhé:
+Tạo access token:
+https://gitlab.com/-/profile/personal_access_tokens --> check api, read_registry
+Gõ lệnh login theo cú pháp sau:
+docker login registry.gitlab.com -u <your_username> -p <your_personal_access_token>
+Chúc các bạn thành công
+0
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 4 28, 2022 3:40 CH
+cám ơn bạn nhé
+0
+|
+Trả lời
+Chia sẻ
+Trường Đoàn @doantruong
+thg 5 19, 9:03 SA
+Hi a, Thanks a về series docker này. E có một chút thắc mắc nhỏ. Khi dockerize ứng dụng FE (react, vue) thì sẽ có thêm 1 stage build nginx webserver để run web thay vì npm run dev. Nhưng ở các ứng dụng BE (node, python) mình lại run webser với host=0.0.0.0 (npm start/python app.py) để tạo 1 webserver ở local và cho phép access từ ngoài vào chứ không dùng nginx giống với FE. Anh có thể giải thích vì sao được không ạ? Thanks a nhiều
+0
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 5 19, 9:26 SA
+với các app frontend, sau khi build xong thì ta đc các file static (HTML, CSS, JS), bản thân chúng không tự chạy được mà cần có 1 server (webserver) để "serve" (phục vụ) nó.E có thể dùng NodeJS, Python, PHP, bất kì backend nào cũng được, hoặc như a thì a thích dùng Nginx hơn
+Dùng Nginx hay dùng Python/Nodejs/php là tuỳ e hết nhé, mỗi cái đều có tốt/chưa tốt trong những trường hợp khác nhau, nhưng nếu chỉ đơn giản là "serve" app React/Vue thường thì Nginx tốt hơn vì nó support nhiều thứ cho static assets
+0
+|
+Trả lời
+Chia sẻ
+Phạm Đức Khánh @duckhanh2411
+thg 9 15, 12:04 CH
+best tutorial ever, respect
++1
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 9 16, 11:22 SA
+cám ơn bạn đã theo dõi
+0
+|
+Trả lời
+Chia sẻ
+Huynh @huynhttdev
+thg 11 18, 10:32 SA
+Anh cho e hỏi chút là giả dụ người khác muốn tải cái của mình về thì mình phải để project là public để cho người kia dùng bình thường phải không a?
+0
+|
+Trả lời
+Chia sẻ
+Mai Trung Đức @maitrungduc1410
+thg 11 20, 5:35 CH
+đúng rồi e, e muốn người khác dùng được cái của e thì e sẽ build project của e thành 1 cái image và push lên đâu đó để người ta có thể tải về được. ví dụ docker hub: https://hub.docker.com
+0
+|
+Trả lời
+Chia sẻ
+TÀI NGUYÊN
+Bài viết
+Tổ chức
+Câu hỏi
+Tags
+Videos
+Tác giả
+Thảo luận
+Đề xuất hệ thống
+Công cụ
+Machine Learning
+Trạng thái hệ thống
+DỊCH VỤ
+Viblo
+Viblo Code
+Viblo CTF
+Viblo CV
+Viblo Learning
+Viblo Partner
+Viblo Battle
+Viblo Interview
+ỨNG DỤNG DI ĐỘNG
+LIÊN KẾT
+© 2023 Viblo. All rights reserved.
+Về chúng tôi
+Phản hồi
+Giúp đỡ
+FAQs
+RSS
+Điều khoản
+Hãy đăng ký một tài khoản Viblo để nhận được nhiều bài viết thú vị hơn.
+Đăng nhập
+Đăng kí

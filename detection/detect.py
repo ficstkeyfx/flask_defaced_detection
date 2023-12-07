@@ -30,19 +30,29 @@ class Detection:
                 model.load_weights(f'detection/models/weights_{_model}_{mode}.h5')
                 print(model.summary())
                 return model
+        elif mode == "text":
+            pass
+        elif mode == "fusion":
+            pass
     
     def load_image(self, filename):
         img = plt.imread(filename)
         resized_image = transform.resize(img, (224, 224, 3), anti_aliasing=True)
         resized_image = np.expand_dims(resized_image, axis=0)
         return resized_image
-        
+
+    def load_txt(self, filename):
+        pass
     def detect(self, filename):
         if(self.mode == "image"):
             image = self.load_image(filename)
             y_prob = self.model.predict(image)
             y_pred = np.argmax(y_prob, axis=1)
             return y_pred[0]
+        elif self.mode == "text":
+            pass
+        elif self.mode == "fusion":
+            pass
     
 if(__name__=="__main__"):
     detect = Detection()
