@@ -17,31 +17,116 @@
         <div class="container-login100">
             <div class="wrap-login100">
                 <form class="login100-form validate-form" action="/detect" method="POST">
-                    <span class="login100-form-title p-b-43">
-                        URL of website: 
+                    <span class="p-b-43" style="font-size: 30px">
+                        Select type input
                     </span>
-                    
-                    <div class="wrap-input100 validate-input" data-validate="Url is required">
-                        <input class="input100" type="" name="url" value="{{url}}">
-                        <span class="focus-input100"></span>
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-md-10 d-flex">
+                            <input type="radio" style="width: 30px" id="age1" value="30" name="type" onclick="handelURL()"/>
+                            <label for="input100 col-2" style="font-size: 30px; margin: 30px">URL</label><br>
+                            <input type="radio" style="width: 30px" id="age2" value="60" name="type" onclick="handelPATH()"/>
+                            <label for="input100 col-2 " style="font-size: 30px; margin: 30px">PATH</label><br>
+                        </div>
                     </div>
+                    <div id="url">
+                        <span class="login100-form-title p-b-43">
+                            URL of website: 
+                        </span>
+                        
+                        <div class="wrap-input100 validate-input" data-validate="Url is required" style="height: 50px">
+                            <input class="input100" id="input_url" type="" name="url" value=""/>
+                            <span class="focus-input100"></span>
+                        </div>
 
-                    <div class="container-login100-form-btn">
-                        <button class="login100-form-btn">
-                            Submit
-                        </button>
+                        <div class="container-login100-form-btn">
+                            <button class="login100-form-btn">
+                                Submit
+                            </button>
+                        </div>
                     </div>
+                    <br>
+                    <br>
+                    <br>
+                    <div id="path">
+                        <div>
+                            <span class="login100-form-title p-b-43">
+                                Path of image: 
+                            </span>
+                            <div class="wrap-input100 validate-input" data-validate="Url is required" style="height: 50px">
+                                <input class="input100" type="" name="path_img" value=""/>
+                                <span class="focus-input100"></span>
+                            </div>
+                            <br>
+                            <br>
+                            <br>
+                            <span class="login100-form-title p-b-43">
+                                Path of text: 
+                            </span>
+                            <div class="wrap-input100 validate-input" data-validate="Url is required" style="height: 50px">
+                                <input class="input100" type="" name="path_txt" value=""/>
+                                <span class="focus-input100"></span>
+                            </div>
+
+                            <div class="container-login100-form-btn">
+                                <button class="login100-form-btn">
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
                     {% if detect == 1  %}
                         <br>
-                        <span class="login100-form-title p-b-43 text-success">
+                        <span class="login100-form-title p-b-43 text-success font-weight-bold">
                             This website is benign
                         </span>
+                        {% if image_prob[0] == 0 %}
+                        <span class="login100-form-title p-b-43 text-success font-weight-bold">
+                            Img: Benign
+                        </span>
+                        {% else %}
+                        <span class="login100-form-title p-b-43 text-danger font-weight-bold">
+                            Img: Defaced
+                        </span>
+                        {% endif %}
+
+                        {% if txt_prob[0] == 0 %}
+                        <span class="login100-form-title p-b-43 text-success font-weight-bold">
+                            Text: Benign
+                        </span>
+                        {% else %}
+                        <span class="login100-form-title p-b-43 text-danger font-weight-bold">
+                            Text: Defaced
+                        </span>
+                        {% endif %}
+
                     {% elif detect == 2  %}
                         <br>
-                        <span class="login100-form-title p-b-43 text-danger">
+                        <span class="login100-form-title p-b-43 text-danger font-weight-bold">
                             This website is defaced
                         </span>
+
+                        {% if image_prob[0] == 0 %}
+                        <span class="login100-form-title p-b-43 text-success font-weight-bold">
+                            Img: Benign
+                        </span>
+                        {% else %}
+                        <span class="login100-form-title p-b-43 text-danger font-weight-bold">
+                            Img: Defaced
+                        </span>
+                        {% endif %}
+
+                        {% if txt_prob[0] == 0 %}
+                        <span class="login100-form-title p-b-43 text-success font-weight-bold">
+                            Text: Benign
+                        </span>
+                        {% else %}
+                        <span class="login100-form-title p-b-43 text-danger font-weight-bold">
+                            Text: Defaced
+                        </span>
+                        {% endif %}
                     {% endif %}
+                    </div>
                 </form>
                 {% if detect == 0 %}
                     <div class="login100-more" style="background-image: url('../static/images/bg-01.jpg');">
@@ -56,5 +141,21 @@
             </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $("#url").hide();
+        $("#path").hide();
+        $("#input_url").val("");
+        function handelURL(){
+            $("#path").hide();
+            $("#url").show();
+        }
+
+        function handelPATH(){
+            $("#url").hide();
+            $("#path").show();
+            $("#input_url").val("");
+        }
+    </script>
 {% endif %}
 {% endblock body %}

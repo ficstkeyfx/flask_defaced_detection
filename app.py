@@ -7,6 +7,7 @@ import os
 import shutil
 from detection.crawl import Crawl
 app = Flask(__name__)
+app.app_context().push()
 app.config['SECRET_KEY'] = '!9m@S-dThyIlW[pHQbN^'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:admin@localhost/auth'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -66,19 +67,29 @@ def detect():
     form = URL_FORM(request.form)
     print(form.url.data)
     url = form.url.data
-
-    crawl = Crawl()
-    crawl.crawl_data(url)
-    file_name = crawl.filename
-    file_path = f"detection/images/{file_name}.png"
+    if(url != ""):
+        crawl = Crawl()
+        crawl.crawl_data(url)
+        file_name = crawl.filename
+        file_path = f"detection/images/{file_name}.png"
+        file_path_txt = f"detection/text/{file_name}.txt"
+        destination_path = f"static/images/detected/{file_name}.png"
+        shutil.copy(file_path, destination_path)
+    else:
+        file_path = form.path_img.data
+        file_path_txt = form.path_txt.data
+        file = file_path.split("/")[-1].split("\\")[-1]
+        file_name = file[:-4]
+        destination_path = f"static/images/detected/{file}"
+        shutil.copy(file_path, destination_path)
     print(file_path)
-    destination_path = f"static/images/detected/{file_name}.png"
-    shutil.copy(file_path, destination_path)
+    
     detect_model = Detection() 
-    if detect_model.detect(file_path) == 0:
-        return render_template("index.html", detect = 1, image_path = file_name, url=url)
+    img, txt, result = detect_model.detect([file_path, file_path_txt], "fusion")
+    if result == 0:
+        return render_template("index.html", detect = 1, image_prob = img, txt_prob = txt, image_path = file_name, url=url)
     else :
-        return render_template("index.html", detect = 2, image_path = file_name, url=url)
+        return render_template("index.html", detect = 2, image_prob = img, txt_prob = txt, image_path = file_name, url=url)
     return render_template("index.html")
 @app.route('/logout/')
 def logout():
