@@ -1,4 +1,3 @@
 __pycache__
 .venv
-detection/models/*.h5
-detection/models/*.pickle
+detection/models/*
