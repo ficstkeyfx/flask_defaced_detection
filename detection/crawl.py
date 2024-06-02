@@ -13,6 +13,8 @@ class Crawl:
         with open("detection/html/" + self.filename+'.html','w', encoding='utf-8') as file:
             file.write(self.driver.page_source)
         self.driver.save_screenshot("detection/images/" + self.filename +'.png')
+        self.driver.quit()
+
 
 if(__name__ == '__main__'):
     crawl = Crawl()

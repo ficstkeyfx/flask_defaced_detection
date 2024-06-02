@@ -53,7 +53,7 @@ class Detection:
         elif mode == "text":
             if(_model == "bilstm"):
                 vocab_size = len(self.tokenizer.word_index) + 1
-                # vocab_size = 2829034
+                vocab_size = 2829034
                 model = Sequential()
                 model.add(L.Embedding(input_dim=vocab_size,
                                     output_dim=64, 

@@ -32,5 +32,3 @@ Delhi's Most Ultra Modern Super Speciality Diagnostic Centre    |    Delhi's Lar
 OUR ASSOCIATIONS / CERTIFICATIONS
 Academia 13 Cardiovascular Risk in Diabetes
 LATEST NEWS
-getResultSet($sql); while ($r = $rs->fetch_assoc()) { ?>
-0) { ?> ">

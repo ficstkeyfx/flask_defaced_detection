@@ -108,7 +108,7 @@
         </style>
         <link href="css/sidebar.css" type="text/css" rel="stylesheet">
 
-        <script type="text/javascript" src="js/jquery-1.6.min.js"></script><meta http-equiv="origin-trial" content="AymqwRC7u88Y4JPvfIF2F37QKylC04248hLCdJAsh8xgOfe/dVJPV3XS3wLFca1ZMVOtnBfVjaCMTVudWM//5g4AAAB7eyJvcmlnaW4iOiJodHRwczovL3d3dy5nb29nbGV0YWdtYW5hZ2VyLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjk1MTY3OTk5LCJpc1RoaXJkUGFydHkiOnRydWV9">
+        <script type="text/javascript" src="js/jquery-1.6.min.js"></script>
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
         <script type="text/javascript" src="js/jquery.tools.min.js"></script>
@@ -305,7 +305,7 @@
                                 $('#menu_'+i).removeClass('active');
                             }
 
-                            $('#menu_'+<? echo $pageID; ?>).addClass('active');
+                            $('#menu_'+1).addClass('active');
                            
                         </script>
                     </div>
@@ -802,13 +802,10 @@
             <td style="width:33%;" valign="top">
                 <div class="box nspArts small" style=" height: 220px; width: 323px;margin-right: 5px;">
                     <div style="">
-                                                <!--<h3 class="header"><span><? //echo $r["articleTitle"];            
-                                                        ?></span></h3>-->
+                                                <!--<h3 class="header"><span></span></h3>-->
                         <h3 class="header" style="text-transform: none;">Academia 13 Cardiovascular Risk in Diabetes</h3>
                         <center>
-                            <!--                            <a href="articlePages.php?rID=<? // echo $r["rID"];              
-                                                                                            ?>"><img src="uploads/Article/<? // echo $r["imgThumb"];              
-                                                                                                                            ?>" alt="Diagnostic lab"  height="152px" /></a>-->
+                            <!--                            <a href="articlePages.php?rID="><img src="uploads/Article/" alt="Diagnostic lab"  height="152px" /></a>-->
                             <iframe height="155" width="215" src="//www.youtube.com/embed/eWJTEDPgTeg" frameborder="0"></iframe>
                         </center>
                     </div>
@@ -820,143 +817,7 @@
                         <h3 class="header"><span><img src="images/icons/news.gif" alt=" Diagnostic Test India">Latest News </span></h3>
                         <div style=" height:158px;">
                             <marquee direction="up" scrollamount="3" scrolldelay="80" truespeed="truespeed" onmouseover="this.setAttribute('scrollamount', 0, 0);" onmouseout="this.setAttribute('scrollamount', 2, 0);">
-                                getResultSet($sql);
-                                        while ($r = $rs-&gt;fetch_assoc()) {
-                                        ?&gt;
-                                            <table cellspacing="0" cellpadding="0" border="0" style=" margin: 10px;">
+                                <table cellspacing="0" cellpadding="0" border="0" style=" margin: 10px;">
                                     <tbody>
 
-                                        <!--?
-                                        $sql = "select rID,
-                                                articleTitle,
-                                                (select count(*)
-                                                from articlepages 
-                                                where articleID=rID)  as cnt  
-                                        from articles
-                                        where 1=1
-                                        and categoryID='News'
-                                        and activeFL=1
-                                        order by rID desc limit 7";
-                                        $rs = $db---><tr>
-                                                <td style="border-bottom: 2px dotted #e31e24;padding-bottom: 2px; width: 100%; vertical-align: middle;padding:5px 0; ">
-                                                    <p style="font-family: verdana; font-size: 11px; text-align: left!important;">
-                                                        <!--                                                        <img style="padding:-1px 5px 0 5px;" src="images/icons/double_quotes_start.png">-->
-                                                        <!--? if ($r["cnt"] --> 0) { ?&gt;
-                                                            <a href="news.php?rID=<? echo $r[" rid"];="" ?="">"&gt;<!--? echo $r['articleTitle'] ?--> </a>
-                                                        <!--? } else { ?-->
-                                                            <a href="#"><!--? echo $r['articleTitle'] ?--> </a>
-                                                        <!--? } ?-->
-                                                        <!--                                                        <img style="padding:0 5px 0 5px;" src="images/icons/double_quotes_end.png">                                                                   -->
-                                                    </p>
-
-                                                </td>
-                                            </tr>
-                                        <!--? } ?-->
-                                    </tbody>
-                                </table>
-                            </marquee>
-                        </div>
-                    </div>
-                </div>
-            </td>
-        </tr>
-    </tbody></table>
-</div>
-
-<div id="gkBottomWrap" class="gkWrap clear">
-
-</div>
-
-<script type="text/javascript">
-    function abc(id) {
-        $j('#rHealthPackage').hide();
-        $j('#' + id).show();
-        modalPop.load();
-    }
-
-    function popUpClose() {
-        modalPop.close();
-    }
-</script>
-<script type="text/javascript">
-    $(document).ready(function() {
-        modalPop = $("#dvPopUp").overlay({
-            top: 110,
-            mask: {
-                color: '#fff',
-                loadSpeed: 200,
-                opacity: 0.8
-            },
-            closeOnClick: true
-        }).data("overlay");
-
-    })
-</script>
-
-
-
-<div id="dvPopUp" style="display:none;"><a class="close"></a>
-    <div style="width:900px;">
-        <div style="height:auto; width:500px; border:5px #e31e24 solid;height: 435px; margin:0 auto; ">
-            <div style="float: right; ">
-                <span> <a href="#" onclick="popUpClose();"><img src="images/close-button.png" style=" margin-top:-19px; margin-right: -20px;" alt="Diagnostic Centre"></a></span>
-            </div>
-
-            <div id="rHealthPackage" style="display:nne; background-color: #fff;">
-                <div style=" border-bottom:2px solid #e31e24; height:98px;">
-                    <img src="images/style1/logo.png" style=" padding:19px 0 0 10px;" alt="Blood Testing in Delhi">
-                    <img src="images/disc.png" style=" height:90px; float: right;" alt="Diagnostic centre India">
-                </div>
-
-                <div style="background: url('images/popup.png') no-repeat; height:334px;">
-                    <div id="dvContactForm">
-
-                        <table width="100%" cellpadding="4" cellspacing="8" style="padding: 10px;">
-                            <tbody><tr>
-                                <td><span style=" font-weight: bold; font-size: 13px;">Name</span>&nbsp; <span style="color:red;">*</span></td>
-                                <td>
-                                    <input type="text" id="txtname" style=" height: 35px; border:1px solid #5c5c5c;">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><span style=" font-weight: bold; font-size: 13px;">Email ID </span>&nbsp; <span style="color:red;">*</span></td>
-                                <td width="80%">
-                                    <input type="text" id="txtEmailID" style=" height: 35px;border:1px solid #5c5c5c;">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><span style=" font-weight: bold; font-size: 13px;">Phone No.</span>&nbsp; <span style="color:red;">*</span></td>
-                                <td width="80%">
-                                    <input type="text" id="txtPhone" style=" height: 35px;border:1px solid #5c5c5c;">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="vertical-align: top;"><span style=" font-weight: bold; font-size: 13px;">Address</span></td>
-                                <td width="80%">
-                                    <textarea id="txtAddress" name="txtAddress" rows="10" cols="20" style="border:1px solid #5c5c5c;"></textarea>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;</td>
-                                <td align="right" style=" padding-right: 65px;">
-                                    <input type="button" class="classname" value="Submit" id="btnSubmit" onclick="xApp.btnRegisterHP_Click();">
-
-                                </td>
-                            </tr>
-                        </tbody></table>
-                    </div>
-                    <div id="dvStatus" style="font-size: 14px; color:red; font-weight: bold;"></div>
-                    <div id="dvSucess" style=" padding-top: 100px;font-size: 14px; color:red; font-weight: bold;"></div>
-
-                </div>
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-<!--?
-include 'footer.php';
-?--></div></body></html>
+                                        </tbody></table></marquee></div></div></div></td></tr></tbody></table></div></div></body></html>
