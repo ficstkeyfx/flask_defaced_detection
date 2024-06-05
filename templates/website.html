@@ -3,15 +3,42 @@
 {% block body %}
 
 <div class="topnav">
-    {% if session.logged_in %}
-        <a href="/">Dashboard</a>
-        <a href="/target/">Detect target</a>
-        <a href="/website/">Website monitor</a>
-        <a class="float-end" href="/logout/">Logout</a>
-	{% else %}
-		<a href="/login/">Login</a>
-		<a href="/register/">Sign up</a>
-	{% endif %}
+    <nav class="navbar navbar-top navbar-expand navbar-dark bg-primary border-bottom">
+        <div class="container-fluid">
+            <form class="navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">
+                <div class="form-group mb-0">
+                    <div class="input-group input-group-alternative input-group-merge">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
+                        <input class="form-control" placeholder="Search" type="text">
+                    </div>
+                </div>
+            </form>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                {% if session.logged_in %}
+                    <a href="/">Dashboard</a>
+                    <a href="/target/">Detect target</a>
+                    <a href="/website/">Website monitor</a>
+                    <a href="/notification/" style="position: relative; display: inline-block;">
+                        Notification
+                        <span id="notification" style="position: absolute; top: 5px; right: 5px; width: 10px; height: 10px; background-color: red; border-radius: 50%;"></span>
+                    </a>
+                    <a class="float-end" href="/logout/">Logout</a>
+                {% else %}
+                    <a href="/login/">Login</a>
+                    <a href="/register/">Sign up</a>
+                {% endif %}
+            </div>
+        </div>
+        {% if session.logged_in %}
+            <div class="float-right" style="color: white;">
+                {{ session.username}}
+            </div>
+        {% endif %}
+    </nav>
 </div>
 <hr>
 
@@ -20,28 +47,22 @@
         <div class="container-login100">
             <div class="wrap-login100">
                 <form class="login100-form validate-form" action="/website/add" method="POST">
-                    <h2>
-                        Add new website to monitor
-                    </h2>
-                    <br>
-                    <br>
                     <div id="path">
                         <div>
                             <span class="login100-form-title p-b-43">
-                                Name of website: 
+                                Add new website to monitor
                             </span>
-                            <div class="wrap-input100 validate-input" data-validate="Url is required" style="height: 50px">
-                                <input class="input100" type="text" name="name" value=""/>
+                            <div class="wrap-input100 validate-input" data-validate = "Name is required">
+                                <input class="input100" type="text" name="name">
                                 <span class="focus-input100"></span>
+                                <span class="label-input100">Name of Website</span>
                             </div>
                             <br>
 
-                            <span class="login100-form-title p-b-43">
-                                URL of website: 
-                            </span>
-                            <div class="wrap-input100 validate-input" data-validate="Url is required" style="height: 50px">
-                                <input class="input100" type="" name="url" value=""/>
+                            <div class="wrap-input100 validate-input" data-validate = "URL is required">
+                                <input class="input100" type="text" name="url">
                                 <span class="focus-input100"></span>
+                                <span class="label-input100">URL of Website</span>
                             </div>
 
                             <div class="container-login100-form-btn">
@@ -52,7 +73,7 @@
                         </div>
                     </div>
                 </form> 
-                <div class="login100-more">
+                <div class="login100-more" style="z-index:auto;">
                     <h2>Website Monitor</h2>
                     <br>
                     <br>
@@ -132,4 +153,21 @@
         });
     </script>
 {% endif %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+    var socket = io();
+    socket.emit('notification');
+    socket.on('connect', function() {
+        console.log("Hello");
+    });
+    $("#notification").hide();
+    socket.on('notification', function(status) {
+        if(status == 1){
+            $("#notification").show();
+        }else {
+            $("#notification").hide();
+        }
+        socket.emit('notification');
+    });
+</script>
 {% endblock body %}

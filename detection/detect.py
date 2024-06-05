@@ -109,7 +109,7 @@ class Detection:
     
 if(__name__=="__main__"):
     detect = Detection()
-    print(detect.detect("D:\\data\\dataset\\image\\benign\\0a076f5bf_https___girlsdateforfree.com.png", "image"))
-    print(detect.detect("D:\\data\\dataset\\text\\benign\\0a076f5bf_https___girlsdateforfree.com.txt", "text"))
-    print(detect.detect(["D:\\data\\dataset\\image\\benign\\0a076f5bf_https___girlsdateforfree.com.png","D:\\data\\dataset\\text\\benign\\0a076f5bf_https___girlsdateforfree.com.txt"], "fusion"))
+    print(detect.detect("D:\\Research\\data\\image\\defaced\\000fb912c6667a60dce6cadbe599cc74f1333d66c8c754e21fcecaece8821863.png", "image"))
+    print(detect.detect("D:\\Research\\data\\text\\defaced\\00c68116fd77281f20d2a5c39d74ea4e004e4d40dde488c6f496bd362c7b5afd.txt", "text"))
+    print(detect.detect(["D:\\Research\\data\\image\\defaced\\000fb912c6667a60dce6cadbe599cc74f1333d66c8c754e21fcecaece8821863.png","D:\\Research\\data\\text\\defaced\\000fb912c6667a60dce6cadbe599cc74f1333d66c8c754e21fcecaece8821863.txt"], "fusion"))
     # detect.detect("D:\\data\\dataset\\image\\deface\\\\535998e0d3284adcb736e2ade1f9e591d7953e0ede3ad2c704c3ae50789947c8.png", "image")

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block body %}
+
+<div class="topnav">
+    <nav class="navbar navbar-top navbar-expand navbar-dark bg-primary border-bottom">
+        <div class="container-fluid">
+            <form class="navbar-search navbar-search-light form-inline mr-sm-3" id="navbar-search-main">
+                <div class="form-group mb-0">
+                    <div class="input-group input-group-alternative input-group-merge">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
+                        <input class="form-control" placeholder="Search" type="text">
+                    </div>
+                </div>
+            </form>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                {% if session.logged_in %}
+                    <a href="/">Dashboard</a>
+                    <a href="/target/">Detect target</a>
+                    <a href="/website/">Website monitor</a>
+                    <a href="/notification/" style="position: relative; display: inline-block;">
+                        Notification
+                        <span id="notification" style="position: absolute; top: 5px; right: 5px; width: 10px; height: 10px; background-color: red; border-radius: 50%;"></span>
+                    </a>
+                    <a class="float-end" href="/logout/">Logout</a>
+                {% else %}
+                    <a href="/login/">Login</a>
+                    <a href="/register/">Sign up</a>
+                {% endif %}
+            </div>
+        </div>
+        {% if session.logged_in %}
+            <div class="float-right" style="color: white;">
+                {{ session.username}}
+            </div>
+        {% endif %}
+    </nav>
+</div>
+
+{% if session['logged_in'] %}
+    <div class="limiter">
+        <div class="container-login100">
+            <div class="wrap-login100">
+                <form class="login100-form validate-form" action="/detect" method="POST">
+                    <br>
+                    <span class="login100-form-title p-b-43 font-weight-bold">
+                        Website: {{website.name}} - {{website.url}}
+                    </span>
+                    {% if detect == 0  %}
+                        <br>
+                        <span class="login100-form-title p-b-43 text-success font-weight-bold">
+                            Website is benign
+                        </span>
+                    {% elif detect == 1  %}
+                        <br>
+                        <span class="login100-form-title p-b-43 text-danger font-weight-bold">
+                            Website is defaced
+                        </span>
+                    {% endif %}
+                    <br>
+                    <span class="login100-form-title p-b-43 font-weight-bold">
+                        Detect in {{history.gio.strftime("%H:%M:%S")}} - {{history.ngay.strftime("%Y-%m-%d")}}
+                    </span>
+                </form>
+                {% if detect == 0  %}
+                    <div class="login100-more" style="background-image: url('../static/images/detected/{{history.filename}}.png'); z-index: auto;">
+                    </div>
+                {% elif detect == 1  %}
+                    <div class="login100-more" style="background-image: url('../static/images/detected/{{history.filename}}.png'); z-index: auto;">
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+{% endif %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+    var socket = io();
+    socket.emit('notification');
+    socket.on('connect', function() {
+        console.log("Hello");
+    });
+    $("#notification").hide();
+    socket.on('notification', function(status) {
+        if(status == 1){
+            $("#notification").show();
+        }else {
+            $("#notification").hide();
+        }
+        socket.emit('notification');
+    });
+</script>
+{% endblock body %}
